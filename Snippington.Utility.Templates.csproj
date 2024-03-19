@@ -9,7 +9,7 @@
     <Authors>Snippington</Authors>
     <Description>ASP.Net Core MVC Template with Identity and CRUD Controller.</Description>
     <PackageTags>code generation;asp net template;mvc;identity;</PackageTags>
-    <PackageProjectUrl>https://github.com/snippington/snp-asp-mvc-template</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/snippington/snp-aspnet-mvc-template</PackageProjectUrl>
 
     <!-- Keep package type as 'Template' to show the package as a template package on nuget.org and make your template available in dotnet new search.-->
     <PackageType>Template</PackageType>
