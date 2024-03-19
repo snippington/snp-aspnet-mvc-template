@@ -1,0 +1,549 @@
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="columns col-oneline">
+        <div class="column col-6">
+            <div class="card-header">
+                <div class="card-title h5 text-primary">Samples</div>
+                <div class="card-subtitle text-gray">Manage</div>
+            </div>
+        </div>
+        <div class="column col-6">
+            <a id="btnRefresh" class="btn float-right">
+                <i class="icon icon-refresh"></i>
+            </a>
+            <a id="btnAddData" class="btn float-right">
+                <i class="icon icon-plus"></i>
+            </a>
+        </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+    <div class="column col-6 col-mx-auto">
+        <div class="input-group"><span class="input-group-addon" style="padding-top:20px;">search:</span>
+            <input name="q" id="q" class="form-input" style="height:65px;outline:none;" type="search" placeholder="term (min. 3 characters)" onkeyup="searchItems();" autocomplete="off">
+            <button class="btn btn-primary input-group-btn" style="height:65px;" onclick="clearSearch();">X</button>
+        </div>
+        <p class="form-input-hint text-center text-tiny">Upto 7 matches returned.</p>
+    </div>
+</div>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>
+                Program
+            </th>
+    
+            <th>
+                Title
+            </th>
+    
+            <th>
+                Content
+            </th>
+    <th>
+                Actions
+            </th>
+        </tr>
+    <thead>
+    <tbody id="listItemsHolder">
+        <td colspan="5">
+            <div class="text-center empty">
+                <progress class="progress" max="100"></progress>
+                <span class="badge" data-badge="">loading</span>
+            </div>
+
+        </td>
+    </tbody>
+</table>
+
+<div class="container">
+    <div class="columns text-center col-gapless mt-8" id="paginationHolder">
+    
+    
+    </div>
+
+</div>
+
+<div class="modal" id="modalForm" data-form-mode="create">
+    <a onclick="toggleDataForm();" class="modal-overlay" aria-label="Close"></a>
+    <div class="modal-container">
+        <div class="modal-header">
+            <a onclick="toggleDataForm();" class="btn btn-clear float-right" aria-label="Close"></a>
+            <div class="modal-title h5">Add Program</div>
+        </div>
+        <div class="modal-body">
+            <div class="content">
+                <form method="post" name="frmData" id="frmData" onsubmit="return false;">
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                <label for="SampleProgramId" class="form-label">Program</label>
+                                <select for="SampleProgramId" class="form-select" id="SampleProgramId" name="SampleProgramId">
+                                </select>
+                                <span id="SampleProgramId" class="text-danger"></span>
+                            </div>
+                    
+                            <div class="form-group">
+                                <label for="Title" class="form-label">Title</label>
+                                    
+                                <input type="text" class="form-input" minlength="2" maxlength="60" id="Title" name="Title" />
+                                <span id="Title" class="text-danger"></span>
+                            </div>
+                    
+                            <div class="form-group">
+                                <label for="Content" class="form-label">Content</label>
+                                    <textarea for="Content" class="form-input" rows="4" id="Content" name="Content"></textarea>
+                                    
+                                <span id="Content" class="text-danger"></span>
+                            </div>
+                    
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" checked /> Is Active
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="btnAdd" name="btnAdd">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="detailsModal">
+    <a onclick="toggleDetailsModal();" class="modal-overlay" aria-label="Close"></a>
+    <div class="modal-container p-0" id="detailsContent">
+    </div>
+</div>
+
+
+<div class="toastr hide" id="toastHolder">
+
+</div>
+
+<script type="text/javascript">
+// Helpers
+function iget(id){
+    return document.getElementById(id);
+}
+// End Helpers
+
+
+// UI Tracking
+var listMode = 'list';
+var showingForm = false;
+var showingToast = false;
+var showingDetails = false;
+var selected = 0;
+function toggleDataForm(){
+    var elem = iget('modalForm');
+    if (showingForm){
+        elem.className = 'modal';
+        showingForm = false;
+
+    }else{
+        elem.className = 'modal active';
+        showingForm = true;
+    }
+    console.log(elem.getAttribute('data-form-mode'));
+}
+
+function toggleDetailsModal(item){
+    var detailsTemplate = '';
+    var elem = iget('detailsModal');
+    if (showingDetails){
+        elem.className = 'modal';
+        showingDetails = false;
+    }else{
+        if(item){
+            detailsTemplate = `<div class="card">
+                <div class="card-header">
+                <div class="card-title modal-title h5">Details</div>
+                <div class="card-subtitle text-gray">Program : <strong>${item.name.name}</strong></div>
+                    
+                <div class="card-body">Title : ${item.title}</div>
+                <div class="card-body">Content : ${item.content}</div>
+                <div class="mt-8"><button class="btn btn-primary" onclick="toggleDetailsModal();">OK</button></div>
+            </div>`;
+                var holder = iget('detailsContent');
+                holder.innerHTML = detailsTemplate;
+            }
+            elem.className = 'modal active';
+            showingDetails = true;
+    }
+}
+
+function hidePagination(){
+    listMode = 'search';
+    iget('paginationHolder').style.display = 'none';
+}
+
+function showPagination(){
+    listMode = 'list';
+    iget('paginationHolder').style.display = 'block';
+}
+
+function clearSearch(){
+    iget('q').value='';
+    gotoPage(1);
+    showPagination();
+}
+
+function showToast(msgType, msg){
+    var elem = iget('toastHolder');
+    var toastTemplate = '';
+    if (msgType){
+        toastTemplate = `<div class="toastr toast-${msgType}">
+            <button class="btn btn-clear float-right" onClick="hideToast();"></button>
+            ${msg}
+        </div>`;
+    }
+    elem.innerHTML = toastTemplate;
+    elem.className = 'toastr show';
+    showingToast = true;
+}
+
+function hideToast(){
+    var elem = iget('toastHolder');
+    if (showingToast){
+        elem.className = 'toastr hide';
+        showingToast = false;
+    }
+}
+
+function makeListHolderEmpty(){
+    var emptyState = `<td colspan="5">
+            <div class="text-center empty">
+                <progress class="progress" max="100"></progress>
+                <span class="badge" data-badge="">loading</span>
+            </div>
+        </td>`;
+        iget('listItemsHolder').innerHTML = emptyState;
+}
+
+function gotoPage(pageNumber){
+    currentPage = pageNumber;
+    renderPagingList();
+    makeListHolderEmpty();
+    getAllItems();
+}
+
+// End UI Tracking
+
+// Request Core
+function makeRequest(method, url, data, callback, useToken){
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200){
+                callback(xhr.responseText);
+            }else{
+                showToast('error', `Unable to make request. Check your connection.`);
+            }
+
+        }
+    }
+    xhr.open(method, url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    if (useToken){
+        xhr.setRequestHeader(
+            'RequestVerificationToken',
+            document.getElementsByName('__RequestVerificationToken')[0].value
+        );
+    }
+    xhr.send(JSON.stringify(data));
+}
+
+function makeFormRequest(method, url, data, callback, useToken){
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState === XMLHttpRequest.DONE){
+            if (xhr.status === 200){
+                callback(xhr.responseText);
+            }else{
+                showToast('error', `Unable to make request. Check your connection.`);
+            }
+        }
+    }
+    xhr.open(method, url, true);
+    if (useToken){
+        xhr.setRequestHeader(
+            'RequestVerificationToken',
+            document.getElementsByName('__RequestVerificationToken')[0].value
+        );
+    }
+    xhr.send(data);
+}
+// End Request Core
+
+//Templating
+function renderListItem(item){
+    var renderedItem = `
+        <td>${item.sampleProgram.name}</td>
+                    
+        <td>${item.title.substring(0,20)}</td>
+            
+        <td>${item.content.substring(0,20)}</td>
+            
+        <td>
+            <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.sampleId});" id="editBtn${item.sampleId}">Edit</button> |
+            <button class="btn btn-sm btn-primary" onClick="getById(${item.sampleId});" id="detailsBtn${item.sampleId}">Details</button> |
+            <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.sampleId},'${item.title}');" id="delBtn${item.sampleId}">X</button>
+        </td>
+    `;
+    return renderedItem;
+}
+
+var currentPage = 1;
+var pageSize = 7;
+var totalPageCount = 1;
+function renderPagingList(){
+    totalPageCount = Math.ceil(listCount / pageSize);
+    var pageLimit = 0;
+    var startPage = 0;
+
+    //Extra Logic
+    if (currentPage >= 2){
+        startPage = currentPage - 1;
+        if (totalPageCount <= (currentPage + 1)){
+            pageLimit = totalPageCount;
+        }else{
+            pageLimit = currentPage + 1;
+        }
+    }else{
+        startPage = 1;
+        if (totalPageCount < 3){
+            pageLimit = totalPageCount;
+        }else{
+            pageLimit = 3;
+        }
+    }
+
+    var pageButtons = '';
+    var activeSwitch = '';
+    for (let i = startPage; i <= pageLimit; i++){
+        if((i+1) == currentPage){
+            activeSwitch = ' active';
+        }else{
+            activeSwitch = '';
+        }
+        pageButtons += ` <button class="btn btn-sm" onclick="gotoPage(${i});">${i}</button>`;
+    }
+    var content = `<div class="column col-12 text-center">${pageButtons}</div>`;
+    iget('paginationHolder').innerHTML = content;
+}
+// End Templating
+
+// Lookups
+function getPrograms(){
+    makeRequest('GET', '/sample/programs', null, function(response){
+        var items = JSON.parse(response);
+        var itemList = iget('SampleProgramId');
+        itemList.innerHTML = '';
+        items.result.forEach(function(item) {
+            var elem = document.createElement('option');
+            var template = `${item.name}`;
+            elem.innerHTML = template;
+            elem.value = item.sampleProgramId;
+            itemList.appendChild(elem);
+        });
+    });
+}
+
+// End Lookups
+
+// Data Calls
+var listCount = 0;
+
+function getCount(){
+    makeRequest('GET', '/sample/count', null, function(response){
+        listCount = parseInt(response);
+        renderPagingList();
+    });
+}
+
+function getAllItems() {
+    setTimeout(function(){
+        var skip = (currentPage - 1) * pageSize;
+        var getAllUrl = '/sample/all?skip=' + skip;
+        makeRequest('GET', getAllUrl, null, function(response){
+            var items = JSON.parse(response);
+            var itemsList = iget('listItemsHolder');
+            itemsList.innerHTML = '';
+            items.result.forEach(function(item){
+            var elem = document.createElement('tr');
+            elem.id = 'item' + item.sampleId;
+            var template = renderListItem(item);
+            elem.innerHTML = template;
+            itemsList.appendChild(elem);
+            });
+        });
+    }, 1500);
+}
+
+function searchItems(){
+    var term = iget('q').value;
+    if (term.length>2){
+        hidePagination();
+        makeRequest('GET', '/sample/search?term=' + term, null, function(response){
+            var items = JSON.parse(response);
+            var itemsList = iget('listItemsHolder');
+            itemsList.innerHTML = '';
+            items.result.forEach(function(item){
+                var elem = document.createElement('tr');
+                elem.id = 'item' + item.sampleId;
+                var template = renderListItem(item);
+                elem.innerHTML = template;
+                itemsList.appendChild(elem);
+            });
+        });
+    }
+    if (term.length == 0){
+        gotoPage(1);
+        showPagination();
+    }
+}
+
+function addItem(){
+    var formData = new FormData();
+    var sampleProgramId = iget('SampleProgramId').value;
+    var title = iget('Title').value;
+    var content = iget('Content').value;
+    var isActive = iget('IsActive').value;
+    formData.append("SampleProgramId", sampleProgramId);
+    formData.append("Title", title);
+    formData.append("Content", content);
+    formData.append("IsActive", isActive);
+    makeFormRequest('POST', '/sample/create',
+        formData,
+        function(response){
+            var item = JSON.parse(response);
+            toggleDataForm();
+            listCount += 1;
+            showToast('primary', `Added "${item.value.title}".`);
+            renderPagingList();
+            if (currentPage == 1)
+        {
+            // Lookup ref.
+        item.value.sampleProgram = {};
+        var sampleProgramName = iget('SampleProgramId').innerHTML;
+        item.value.sampleProgram.name = sampleProgramName;
+        var template = renderListItem(item.value);
+        var elem = document.createElement('tr');
+        elem.id = 'item' + item.value.sampleId;
+        elem.innerHTML = template;
+        var itemsList = iget('listItemsHolder');
+
+        if (listCount-1 > pageSize){
+            itemsList.removeChild(itemsList.lastChild);
+        }
+        itemsList.insertBefore(elem, itemsList.firstChild);
+
+        }
+        iget("frmData").reset();
+        setTimeout(function() {
+            hideToast();
+        }, 7000);
+        }, true);
+}
+
+function deleteItem(id, title) {
+    makeRequest('POST', '/sample/delete/' + id, {id:id}, function(response){
+        const element = iget('item' + id);
+        element.className = 'greyed-out';
+        //element.remove();
+        listCount -= 1;
+        totalPageCount = Math.ceil(listCount / pageSize);
+        if (currentPage > totalPageCount){
+            currentPage = totalPageCount;
+            gotoPage(currentPage);
+        }
+        iget('editBtn' + id).disabled = true;
+        iget('detailsBtn' + id).disabled = true;
+        iget('delBtn' + id).disabled = true;
+        showToast('error', `Removed "${title}".`);
+        renderPagingList();
+        setTimeout(function() {
+            hideToast();
+        }, 7000);
+    }, true);
+}
+
+
+function getById(id){
+    makeRequest('GET','/sample/'+id, {id : id}, function(response){
+        var item = JSON.parse(response);
+        toggleDetailsModal(item);
+    }, false);
+}
+
+function fillById(id){
+    selected = id;
+    makeRequest('GET', '/sample/' + id, {id : id}, function(response){
+        toggleDataForm();
+        var item = JSON.parse(response);
+    iget('SampleProgramId').value = item.sampleProgramId;
+    iget('Title').value = item.title;
+    iget('Content').value = item.content;
+    iget('frmData').setAttribute('action', 'sample/edit/' + item.sampleId);
+    iget('modalForm').setAttribute('data-form-mode', 'edit');    
+    }, false);
+}
+
+
+function editItem(){
+    var formData = new FormData();
+        var sampleProgramId = iget('SampleProgramId').value;
+        var title = iget('Title').value;
+        var content = iget('Content').value;
+    var isActive = iget('IsActive').value;
+    formData.append("SampleId", selected);
+    formData.append("SampleProgramId", sampleProgramId);
+    formData.append("Title", title);
+    formData.append("Content", content);
+    formData.append("IsActive", isActive);
+    makeFormRequest('POST', iget('frmData').getAttribute('action'),
+        formData,
+        function(response) {
+            toggleDataForm();
+            var item = JSON.parse(response);
+            var template = renderListItem(item.result);
+            iget('item' + item.result.sampleId).innerHTML = template;
+            showToast('primary', `Updated "${iget('Title').value}".`);
+        }, true);
+}
+
+// End Data Calls
+
+// Event Binding
+window.onload = function init(){
+    iget('btnAddData').addEventListener('click', function(){
+        iget('frmData').setAttribute('action', 'sample/create');
+        iget('modalForm').setAttribute('data-form-mode','create');
+        iget("frmData").reset();
+        toggleDataForm();
+    });
+    iget('btnRefresh').addEventListener('click', function(){
+        gotoPage(1);
+    });
+    iget('btnAdd').addEventListener('click', function(){
+        var elem = iget('modalForm');
+        var mode = elem.getAttribute('data-form-mode');
+        if (mode=='create'){
+            addItem();
+        }else{
+            editItem();
+        }
+    });
+    getCount();
+    getPrograms();
+    getAllItems();
+    iget('q').focus();
+}
+// End Event Binding
+</script>

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Raza Balbale",
+  "classifications": [
+      "Web",
+      "MVC",
+      "Identity"
+  ],
+  "identity": "Snippington.AspNetMVC",
+  "name": "Snippington ASP.Net MVC",
+  "shortName": "snp-asp-mvc",
+  "tags": {
+      "language": "C#",
+      "type": "project"
+  },
+  "sourceName": "SampleWebApp",
+  "preferNameDirectory": true,
+  "primaryOutputs": [
+      {
+          "path": "SampleWebApp.csproj"
+      }
+  ],
+  "sources": [
+      {
+          "include": [
+              "**/*"
+          ],
+          "exclude": [
+              "**/[Bb]in/**",
+              "**/[Oo]bj/**",
+              "**/*.user",
+              "**/*.lock.json"
+          ]
+      }
+  ],
+  "symbols": {
+      "Namespace": {
+          "type": "parameter",
+          "replaces": "SampleWebApp",
+          "description": "The name of the namespace for the generated project."
+      }
+  }
+}

@@ -1,0 +1,20 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    <a href="/Account/Manage/Index">
+        <figure class="avatar avatar-xl">
+            <img src="img/avatar-1.png" alt="...">
+        </figure>
+    </a>
+    <a class="nav-link text-dark" >Hello @User.Identity?.Name!</a>
+}
+else
+{
+    <a class="btn badge" data-badge="!" href="/Identity/Account/"> Sign Up</a>
+    <a class="btn" href="/Account/Login">Login</a>
+}
+</ul>
