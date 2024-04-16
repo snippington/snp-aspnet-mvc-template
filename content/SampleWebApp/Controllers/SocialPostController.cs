@@ -7,70 +7,69 @@ using SampleWebApp.Models;
 
 namespace SampleWebApp.Controllers
 {
-    public class SampleController : Controller
+    public class SocialPostController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public SampleController(ApplicationDbContext context)
+        public SocialPostController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Sample
-        [HttpGet("/sample")]
-        [HttpGet("/sample/index")]
+        [HttpGet("/socialpost")]   
+        [HttpGet("/socialpost/index")]
         public async Task<IActionResult> Index()
         {
             return await Task.Run(() => View());
         }
 
-        [HttpGet("/sample/details/{id?}")]
+        [HttpGet("/socialpost/details/{id?}")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id==null)
             {
                 return NotFound();
             }
-            var sample = await _context.Sample
+            var socialpost = await _context.SocialPost
                 .Include(p => p.SampleProgram)
-                .FirstOrDefaultAsync(m => m.SampleId == id);
-            if (sample == null)
+                .FirstOrDefaultAsync(m => m.SocialPostId == id);
+            if (socialpost == null)
             {
                 return NotFound();
             }
-            return View(sample);
+            return View(socialpost);
         }
     
-        [HttpPost("/sample/create")]
+        [HttpPost("/socialpost/create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SampleProgramId,Title,Content,IsActive")] Sample sample)
+        public async Task<IActionResult> Create([Bind("SampleProgramId,Title,Content,IsActive")] SocialPost socialpost)
         {
-            sample.CreatedOn = DateTime.Now;
-            sample.LastModifiedOn = DateTime.Now;
+            socialpost.CreatedOn = DateTime.Now;
+            socialpost.LastModifiedOn = DateTime.Now;
             if (ModelState.IsValid)
             {
-                _context.Add(sample);
+                _context.Add(socialpost);
                 await _context.SaveChangesAsync();
             }
 
             
-            return sample == null ? NotFound() : Ok(Json( new
+            return socialpost == null ? NotFound() : Ok(Json( new
                 {
-                    sampleId= sample.SampleId,
-                    sampleProgramId = sample.SampleProgramId,
-                    title = sample.Title,
-                    content = sample.Content,
+                    socialpostId= socialpost.SocialPostId,
+                    sampleProgramId = socialpost.SampleProgramId,
+                    title = socialpost.Title,
+                    content = socialpost.Content,
                 }
             ));
         }
 
 
-        [HttpPost("/sample/edit/{id}")]
+        [HttpPost("/socialpost/edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SampleId, SampleProgramId,Title,Content, IsActive")] Sample sample)
+        public async Task<IActionResult> Edit(int id, [Bind("SocialPostId, SampleProgramId,Title,Content, IsActive")] SocialPost socialpost)
         {
 
-            if (id != sample.SampleId)
+            if (id != socialpost.SocialPostId)
             {
                 return NotFound();
             }
@@ -78,19 +77,19 @@ namespace SampleWebApp.Controllers
             {
                 try
                 {
-                    sample.LastModifiedOn = DateTime.Now;
-                    _context.Update(sample);
+                    socialpost.LastModifiedOn = DateTime.Now;
+                    _context.Update(socialpost);
                     await _context.SaveChangesAsync();
                     
-                    var result = _context.Sample
+                    var result = _context.SocialPost
                         .Include(p => p.SampleProgram)
-                        .FirstOrDefaultAsync(m => m.SampleId == id);
+                        .FirstOrDefaultAsync(m => m.SocialPostId == id);
                     return result == null ? NotFound() : Ok(result);
 
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SampleExists(sample.SampleId))
+                    if (!SocialPostExists(socialpost.SocialPostId))
                     {
                         return NotFound();
                     }
@@ -105,42 +104,42 @@ namespace SampleWebApp.Controllers
         }
 
 
-        [HttpPost("/sample/delete/{id}")]
+        [HttpPost("/socialpost/delete/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var sample = await _context.Sample.FindAsync(id);
-            if (sample == null)
+            var socialpost = await _context.SocialPost.FindAsync(id);
+            if (socialpost == null)
             {
                 return NotFound();
             }
-            _context.Sample.Remove(sample);
+            _context.SocialPost.Remove(socialpost);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet("/sample/all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Sample>))]
+        [HttpGet("/socialpost/all")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SocialPost>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetAllSamples(int skip=0, int take=7)
+        public IActionResult GetAllSocialPosts(int skip=0, int take=7)
         {
-            var samples = _context.Sample
+            var socialposts =_context.SocialPost
                 .Include(p => p.SampleProgram)
                 .OrderByDescending(i=> i.LastModifiedOn).Skip(skip)
                 .Take(take);
 
-            return samples == null ? NotFound() : Ok(samples.ToListAsync());
+            return socialposts == null ? NotFound() : Ok(socialposts.ToListAsync());
         }
 
-        [HttpGet("/sample/search")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Sample>))]
+        [HttpGet("/socialpost/search")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SocialPost>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult SearchAllSamples(string term)
+        public IActionResult SearchAllSocialPosts(string term)
         {
-            var samples = _context.Sample.AsQueryable();
+            var socialposts =_context.SocialPost.AsQueryable();
             if (!string.IsNullOrEmpty(term))
             {
-                samples = _context.Sample
+                socialposts =_context.SocialPost
                 .Include(p => p.SampleProgram)
                 .Where(
                     s =>
@@ -148,20 +147,20 @@ namespace SampleWebApp.Controllers
                  EF.Functions.Like(s.Content, $"%{term}%")
                 ).Take(7);
             }
-            return samples == null ? NotFound() : Ok(samples.ToListAsync());
+            return socialposts == null ? NotFound() : Ok(socialposts.ToListAsync());
         }
 
-        [HttpGet("/sample/count")]
+        [HttpGet("/socialpost/count")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         public IActionResult GetCount()
         {
-            var count = _context.Sample
+            var count = _context.SocialPost
                 .Include(p => p.SampleProgram)
                 .Count();
             return Ok(count);
         }
         
-        [HttpGet("/sample/programs")]
+        [HttpGet("/socialpost/programs")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Program>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetPrograms()
@@ -170,10 +169,9 @@ namespace SampleWebApp.Controllers
             return programs == null ? NotFound() : Ok(programs.ToListAsync());
         }
         
-        
-
-        [HttpGet("/sample/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Sample))]
+    
+        [HttpGet("/socialpost/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SocialPost))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int? id)
         {
@@ -182,21 +180,21 @@ namespace SampleWebApp.Controllers
                 return NotFound();
             }
 
-            var sample = await _context.Sample
+            var socialpost = await _context.SocialPost
                 .Include(p => p.SampleProgram)
-                .FirstOrDefaultAsync(m => m.SampleId == id);
-            if (sample == null)
+                .FirstOrDefaultAsync(m => m.SocialPostId == id);
+            if (socialpost == null)
             {
                 return NotFound();
             }
 
-            return sample == null ? NotFound() : Ok(sample);
+            return socialpost == null ? NotFound() : Ok(socialpost);
         }
 
 
-        private bool SampleExists(int id)
+        private bool SocialPostExists(int id)
         {
-            return _context.Sample.Any(e => e.SampleId == id);
+            return _context.SocialPost.Any(e => e.SocialPostId == id);
         }
     }
 }

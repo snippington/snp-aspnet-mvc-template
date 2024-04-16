@@ -63,4 +63,5 @@ public class ApplicationDbContext : IdentityDbContext
     }
     public DbSet<SampleWebApp.Models.Sample> Sample { get;set; }
     public DbSet<SampleWebApp.Models.SampleProgram> SampleProgram { get;set; }
+    public DbSet<SampleWebApp.Models.SocialPost> SocialPost { get;set; }
 }

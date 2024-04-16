@@ -16,13 +16,14 @@ namespace SampleWebApp.Controllers
             _context = context;
         }
 
-        // GET: SampleProgram
+        [HttpGet("/sampleprogram")]   
+        [HttpGet("/sampleprogram/index")]
         public async Task<IActionResult> Index()
         {
             return await Task.Run(() => View());
         }
 
-
+        [HttpGet("/sampleprogram/details/{id?}")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id==null)
@@ -37,7 +38,7 @@ namespace SampleWebApp.Controllers
             return View(sampleProgram);
         }
     
-        [HttpPost]
+        [HttpPost("/sampleprogram/create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,IsActive")] SampleProgram sampleProgram)
         {

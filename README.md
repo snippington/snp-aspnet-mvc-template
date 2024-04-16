@@ -30,9 +30,14 @@ chmod +x ./init.sh
 Once you setup your template, run the below commands (only once):
 
 ```bash
-dotnet ef migrations add CreateInitialSchema
 dotnet ef database update
 ```
+
+Run using:
+```bash
+dotnet run
+```
+
 
 #### Optional
 
