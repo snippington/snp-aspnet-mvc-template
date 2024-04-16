@@ -486,3 +486,5 @@ $RECYCLE.BIN/
 ./bin
 ./obj
 packer.sh
+content/SampleWebApp/app.db
+content/SampleWebApp/Migrations/*
