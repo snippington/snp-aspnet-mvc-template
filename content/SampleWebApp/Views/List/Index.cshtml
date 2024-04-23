@@ -5,7 +5,7 @@
 <div class="columns col-oneline">
     <div class="column col-6">
         <div class="card-header">
-            <div class="card-title h3 text-primary">Social Posts</div>
+            <div class="card-title h3 text-primary">List Demo</div>
             <div class="card-subtitle text-gray">Manage</div>
         </div>
     </div>
@@ -26,7 +26,7 @@
                 placeholder="term (min. 3 characters)" onkeyup="searchItems();" autocomplete="off">
             <button class="btn btn-primary input-group-btn" style="height:65px;" onclick="clearSearch();">X</button>
         </div>
-        <p class="form-input-hint text-center text-tiny">Upto 7 matches returned.</p>
+        <p class="form-input-hint text-center text-tiny" id="searchNote"></p>
     </div>
 </div>
 
@@ -74,7 +74,7 @@
     <div class="container mt-6 px-2">
         <div class="columns" id="newItemTabContent">
             <div class="column col-12">
-                <div class="h5 text-primary">Add Social Post</div>
+                <div class="h5 text-primary">Add Tile List Item</div>
                 <form method="post" name="frmAddData" id="frmAddData" onsubmit="return false;">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
@@ -182,7 +182,7 @@
     var showingToast = false;
     var showingPropertiesBar = false;
     var selected = 0;
-    var listType = 'feed';
+    var listType = 'cards';
 
     function setActivePropertyTab(tabName) {
         setTabHeadersInactive();
@@ -266,12 +266,26 @@
     }
 
     function makeListHolderEmpty() {
-        var emptyState = `<td colspan="5">
-            <div class="text-center empty">
-                <progress class="progress" max="100"></progress>
-                <span class="badge" data-badge="">loading</span>
-            </div>
-        </td>`;
+        var emptyState = '';
+        if (listType == 'table'){
+            emptyState = `<td colspan="5">
+                <div class="text-center empty">
+                    <progress class="progress" max="100"></progress>
+                    <span class="badge" data-badge="">loading</span>
+                </div>
+            </td>`;
+        }else{
+            emptyState = `
+                <div class="column col-12">
+                    <div class="text-center empty">
+                        <progress class="progress" max="100"></progress>
+                        <span class="badge" data-badge="">loading</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        iget('mainListHolder').innerHTML = getContainerPreset();
         iget('listItemsHolder').innerHTML = emptyState;
     }
 
@@ -368,6 +382,37 @@
         return renderedItem;
     }
 
+    function renderCardsPreset() {
+        var renderedItem = `
+        <div class="columns" id="listItemsHolder">
+        </div>
+    `;
+        return renderedItem;
+    }
+
+    function renderTilesPreset() {
+        var renderedItem = `
+        <div class="columns" id="listItemsHolder">
+        </div>
+    `;
+        return renderedItem;
+    }
+
+    function getContainerPreset(){
+        if (listType == 'table') {
+            return renderTablePreset();
+        }
+        if (listType == 'feed'){
+            return renderFeedPreset();
+        }
+        if (listType == 'cards'){
+            return renderCardsPreset();
+        }
+        if (listType == 'tiles'){
+            return renderTilesPreset();
+        }
+    };
+
     function renderListItem(item) {
         var renderedItem = '';
         if (listType == 'table') {
@@ -378,7 +423,7 @@
             <td>
                 <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button> |
                 <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button> |
-                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.name}');" id="delBtn${item.socialPostId}">X</button>
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
             </td>
         </tr>
         `;
@@ -394,11 +439,49 @@
                 <div class="card-image"><img class="img-responsive" src="https://placehold.co/600x400/png"
                         alt="OS X Yosemite"></div>
                 <div class="card-footer">
-                    <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button>
-                    <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button>
-                    <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.name}');" id="delBtn${item.socialPostId}">X</button>
+                    
                 </div>
             </div>
+        `;
+
+        }
+        if (listType == 'cards') {
+            renderedItem = `
+    <div class="column col-4 col-xs-12 mt-6">
+        <div class="card" id="item${item.socialPostId}">
+            <div class="card-header">
+                <div class="card-title h5">${item.title.substring(0, 20)}</div>
+                <div class="card-subtitle text-gray">${item.sampleProgram.name.substring(0, 20)}</div>
+            </div>
+            <div class="card-body">Info Label</div>
+            <div class="card-image"><img class="img-responsive" src="https://placehold.co/600x400/png" alt="OS X Yosemite"></div>
+            <div class="card-footer">
+                <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button>
+                <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button>
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
+            </div>
+        </div>
+    </div>
+        `;
+        }
+        if (listType == 'tiles') {
+            renderedItem = `
+    <div class="column col-9 col-mx-auto mt-12">
+        <div class="tile" id="item${item.socialPostId}">
+            <div class="tile-icon">
+                <figure class="avatar avatar-lg" data-initial="RB" style="background-color: #5755d9;"></figure>
+            </div>
+            <div class="tile-content">
+                <p class="tile-title">${item.title.substring(0, 20)}</p>
+                <p class="tile-subtitle">${item.sampleProgram.name.substring(0, 20)}</p>
+            </div>
+            <div class="tile-action">
+                <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button>
+                <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button>
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
+            </div>
+        </div>
+    </div>
         `;
         }
         return renderedItem;
@@ -495,6 +578,7 @@
         setTimeout(function () {
             var skip = (currentPage - 1) * pageSize;
             var getAllUrl = '/socialpost/all?skip=' + skip;
+            
             makeRequest('GET', getAllUrl, null, function (response) {
                 var items = JSON.parse(response);
                 var itemsList = iget('listItemsHolder');
@@ -502,7 +586,6 @@
                 items.result.forEach(function (item) {
                     var template = '';
                     template = renderListItem(item);
-                    //itemsList.appendChild(template);
                     itemsList.innerHTML += template;
                 });
             });
@@ -518,11 +601,15 @@
                 var itemsList = iget('listItemsHolder');
                 itemsList.innerHTML = '';
                 items.result.forEach(function (item) {
-                    var elem = document.createElement('tr');
-                    elem.id = 'item' + item.socialPostId;
-                    var template = renderListItem(item);
-                    elem.innerHTML = template;
-                    itemsList.appendChild(elem);
+                    //var elem = document.createElement('tr');
+                    //elem.id = 'item' + item.socialPostId;
+                    //var template = renderListItem(item);
+                    //elem.innerHTML = template;
+                    //itemsList.appendChild(elem);
+                    var template = '';
+                    template = renderListItem(item);
+                    //itemsList.appendChild(template);
+                    itemsList.innerHTML += template;
                 });
             });
         }
@@ -618,6 +705,12 @@
         }, false);
     }
 
+    function fillSearchNote(){
+        iget('searchNote').innerText = `
+            Upto ${pageSize} matches returned.
+        `;
+    }
+
 
     function editItem() {
         var formData = new FormData();
@@ -646,13 +739,8 @@
 
     // Event Binding
     document.addEventListener('DOMContentLoaded', function () {
-        if (listType == 'table') {
-            iget('mainListHolder').innerHTML = renderTablePreset();
-        } else {
-            iget('mainListHolder').innerHTML = renderFeedPreset();
-        }
-
-
+        iget('mainListHolder').innerHTML = getContainerPreset();
+        makeListHolderEmpty();
         iget('btnShowAddDataForm').addEventListener('click', function () {
             togglePropertiesBar();
             setActivePropertyTab('newItemTab');
@@ -667,6 +755,7 @@
             editItem();
         });
 
+        fillSearchNote();
         getCount();
         getPrograms();
         getAllItems();
