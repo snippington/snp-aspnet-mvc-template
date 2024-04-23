@@ -1,0 +1,766 @@
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="columns col-oneline">
+    <div class="column col-6">
+        <div class="card-header">
+            <div class="card-title h3 text-primary">Tile List Demo</div>
+            <div class="card-subtitle text-gray">Manage</div>
+        </div>
+    </div>
+    <div class="column col-6">
+        <a id="btnRefresh" class="btn float-right">
+            <i class="icon icon-refresh"></i>
+        </a>
+        <a id="btnShowAddDataForm" class="btn float-right">
+            <i class="icon icon-plus"></i>
+        </a>
+    </div>
+</div>
+<div class="divider"></div>
+<div class="columns">
+    <div class="column col-6 col-mx-auto">
+        <div class="input-group"><span class="input-group-addon" style="padding-top:20px;">search:</span>
+            <input name="q" id="q" class="form-input" style="height:65px;outline:none;" type="search"
+                placeholder="term (min. 3 characters)" onkeyup="searchItems();" autocomplete="off">
+            <button class="btn btn-primary input-group-btn" style="height:65px;" onclick="clearSearch();">X</button>
+        </div>
+        <p class="form-input-hint text-center text-tiny" id="searchNote"></p>
+    </div>
+</div>
+
+
+
+<div class="container" id="mainListHolder">
+
+</div>
+
+<div class="container">
+    <div class="columns text-center col-gapless mt-6" id="paginationHolder">
+
+
+    </div>
+
+</div>
+<!--offscreenForm = modalForm-->
+<div id="propertiesBar" class="offscreen-bar-sm">
+    <div class="columns">
+        <div class="column col-12">
+            <div class="bg-gray docs-block">
+                <button onclick="togglePropertiesBar();" aria-label="Close"
+                    class="btn btn-action btn-sm s-circle float-right">X</button>
+            </div>
+        </div>
+    </div>
+
+    <ul class="tab tab-block">
+        <li class="tab-item active" id="newItemTabHeader" onclick="setActivePropertyTab('newItemTab');">
+            <a class="badge" data-badge="*">
+                New
+            </a>
+        </li>
+        <li class="tab-item c-hand" id="detailsTabHeader">
+            <a>
+                Details
+            </a>
+        </li>
+        <li class="tab-item" id="editItemTabHeader">
+            <a>
+                Edit
+            </a>
+        </li>
+    </ul>
+    <div class="container mt-6 px-2">
+        <div class="columns" id="newItemTabContent">
+            <div class="column col-12">
+                <div class="h5 text-primary">Add Tile List Item</div>
+                <form method="post" name="frmAddData" id="frmAddData" onsubmit="return false;">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label for="Title" class="form-label">Title</label>
+
+                        <input type="text" class="form-input" minlength="2" maxlength="60" id="Title" name="Title" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="SampleProgramId" class="form-label">Program</label>
+                        <select class="form-select" id="SampleProgramId" name="SampleProgramId">
+                        </select>
+                        <span class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true"
+                                checked /> Is Active
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="btnAdd" name="btnAdd">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="columns d-none" id="detailsTabContent">
+            <div class="container">
+                <div class="columns">
+                    <div class="column col-12">
+                        <p>
+                            <label for="labelTitle" class="label">Title</label>
+                            <label id="labelTitle" class="form-label"></label>
+                        </p>
+                    </div>
+                    <div class="column col-12">
+                        <p>
+                            <label for="labelSampleProgram" class="label">Program</label>
+                            <label id="labelSampleProgram" class="form-label"></label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="columns">
+                    <div class="column col-12">
+                        <p>
+                            <label for="labelIsArchived" class="label">Is Archived</label>
+                            <label id="labelIsArchived" class="form-label"></label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns d-none" id="editItemTabContent">
+            <div class="column col-12">
+                <div class="h5 text-primary">Edit Social Post</div>
+                <form method="post" name="frmEditData" id="frmEditData" onsubmit="return false;">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label for="EditTitle" class="form-label">Name</label>
+                        <input type="text" class="form-input" minlength="2" maxlength="60" id="EditTitle"
+                            name="EditTitle" />
+                        <span class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="EditSampleProgramId" class="form-label">Program</label>
+                        <select class="form-select" id="EditSampleProgramId" name="EditSampleProgramId">
+                        </select>
+                        <span class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="EditIsActive" name="EditIsActive"
+                                value="true" checked /> Is Active
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="btnEdit" name="btnEdit">Edit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toastr hide" id="toastHolder">
+
+</div>
+
+<script type="text/javascript">
+    // Helpers
+    function iget(id) {
+        return document.getElementById(id);
+    }
+    // End Helpers
+
+    // UI Tracking
+    var activePropertyTab = 'detailsTabHeader';
+    var showingToast = false;
+    var showingPropertiesBar = false;
+    var selected = 0;
+    var listType = 'tiles';
+
+    function setActivePropertyTab(tabName) {
+        setTabHeadersInactive();
+        setTabContentsInactive();
+        activePropertyTabHeader = tabName + 'Header';
+        activePropertyTabContent = tabName + 'Content';
+        var activeTabHeader = iget(activePropertyTabHeader);
+        activeTabHeader.className = 'tab-item active';
+        var activeTabContent = iget(activePropertyTabContent);
+        activeTabContent.className = 'columns';
+        //Special flow
+        if (tabName == 'editItemTab') {
+            iget('detailsTabHeader').className = 'tab-item d-hide';
+        }
+    }
+
+    function setTabHeadersInactive() {
+        var detailsTabHeader = iget('detailsTabHeader');
+        var newItemTabHeader = iget('newItemTabHeader');
+        var editTabHeader = iget('editItemTabHeader');
+        detailsTabHeader.className = 'tab-item';
+        newItemTabHeader.className = 'tab-item c-hand';
+        editTabHeader.className = 'tab-item d-hide';
+    }
+
+    function setTabContentsInactive() {
+        var detailsTabContent = iget('detailsTabContent');
+        var newItemTabContent = iget('newItemTabContent');
+        var editItemTabContent = iget('editItemTabContent');
+        detailsTabContent.className = 'columns d-none';
+        newItemTabContent.className = 'columns d-none';
+        editItemTabContent.className = 'columns d-none';
+    }
+
+    function togglePropertiesBar() {
+        var propertiesBar = iget('propertiesBar');
+        propertiesBar.classList.toggle('offscreen-bar-sm-show');
+        if (showingPropertiesBar) {
+            showingPropertiesBar = false;
+        } else {
+            showingPropertiesBar = true;
+        }
+    }
+
+    function hidePagination() {
+        listMode = 'search';
+        iget('paginationHolder').style.display = 'none';
+    }
+
+    function showPagination() {
+        listMode = 'list';
+        iget('paginationHolder').style.display = 'block';
+    }
+
+    function clearSearch() {
+        iget('q').value = '';
+        gotoPage(1);
+        showPagination();
+    }
+
+    function showToast(msgType, msg) {
+        var elem = iget('toastHolder');
+        var toastTemplate = '';
+        if (msgType) {
+            toastTemplate = `<div class="toast toast-${msgType}">
+            <button class="btn btn-clear float-right" onClick="hideToast();"></button>
+            ${msg}
+        </div>`;
+        }
+        elem.innerHTML = toastTemplate;
+        elem.className = 'toastr show';
+        showingToast = true;
+    }
+
+    function hideToast() {
+        var elem = iget('toastHolder');
+        if (showingToast) {
+            elem.className = 'toastr hide';
+            showingToast = false;
+        }
+    }
+
+    function makeListHolderEmpty() {
+        var emptyState = '';
+        if (listType == 'table'){
+            emptyState = `<td colspan="5">
+                <div class="text-center empty">
+                    <progress class="progress" max="100"></progress>
+                    <span class="badge" data-badge="">loading</span>
+                </div>
+            </td>`;
+        }else{
+            emptyState = `
+                <div class="column col-12">
+                    <div class="text-center empty">
+                        <progress class="progress" max="100"></progress>
+                        <span class="badge" data-badge="">loading</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        iget('mainListHolder').innerHTML = getContainerPreset();
+        iget('listItemsHolder').innerHTML = emptyState;
+    }
+
+    function gotoPage(pageNumber) {
+        currentPage = pageNumber;
+        renderPagingList();
+        makeListHolderEmpty();
+        getAllItems();
+    }
+    // End UI Tracking
+
+    // Request Core
+    function makeRequest(method, url, data, callback, useToken) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    callback(xhr.responseText);
+                } else {
+                    showToast('error', `Unable to make request. Check your connection.`);
+                }
+
+            }
+        }
+        xhr.open(method, url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        if (useToken) {
+            xhr.setRequestHeader(
+                'RequestVerificationToken',
+                document.getElementsByName('__RequestVerificationToken')[0].value
+            );
+        }
+        xhr.send(JSON.stringify(data));
+    }
+
+    function makeFormRequest(method, url, data, callback, useToken) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    callback(xhr.responseText);
+                } else {
+                    showToast('error', `Unable to make request. Check your connection.`);
+                }
+            }
+        }
+        xhr.open(method, url, true);
+        if (useToken) {
+            xhr.setRequestHeader(
+                'RequestVerificationToken',
+                document.getElementsByName('__RequestVerificationToken')[0].value
+            );
+        }
+        xhr.send(data);
+    }
+    // End Request Core
+
+    //Templating
+    function renderTablePreset() {
+        var renderedItem = `
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Program
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    <thead>
+    <tbody id="listItemsHolder">
+        <td colspan="5">
+            <div class="text-center empty">
+                <progress class="progress" max="100"></progress>
+                <span class="badge" data-badge="">loading</span>
+            </div>
+
+        </td>
+    </tbody>
+</table>
+`;
+        return renderedItem;
+    }
+
+    function renderFeedPreset() {
+        var renderedItem = `
+        <div class="column col-8 col-mx-auto mt-6" id="listItemsHolder">
+        </div>
+    `;
+        return renderedItem;
+    }
+
+    function renderCardsPreset() {
+        var renderedItem = `
+        <div class="columns" id="listItemsHolder">
+        </div>
+    `;
+        return renderedItem;
+    }
+
+    function renderTilesPreset() {
+        var renderedItem = `
+        <div class="columns" id="listItemsHolder">
+        </div>
+    `;
+        return renderedItem;
+    }
+
+    function getContainerPreset(){
+        if (listType == 'table') {
+            return renderTablePreset();
+        }
+        if (listType == 'feed'){
+            return renderFeedPreset();
+        }
+        if (listType == 'cards'){
+            return renderCardsPreset();
+        }
+        if (listType == 'tiles'){
+            return renderTilesPreset();
+        }
+    };
+
+    function renderListItem(item) {
+        var renderedItem = '';
+        if (listType == 'table') {
+            renderedItem = `
+        <tr id="item${item.socialPostId}">
+            <td>${item.title.substring(0, 20)}</td>
+            <td>${item.sampleProgram.name.substring(0, 20)}</td>
+            <td>
+                <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button> |
+                <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button> |
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
+            </td>
+        </tr>
+        `;
+        }
+        if (listType == 'feed') {
+            renderedItem = `
+            <div class="card mt-16" id="item${item.socialPostId}">
+                <div class="card-header">
+                    <div class="card-title h5">${item.title.substring(0, 20)}</div>
+                    <div class="card-subtitle text-gray">${item.sampleProgram.name.substring(0, 20)}</div>
+                </div>
+                <div class="card-body">Info label.</div>
+                <div class="card-image"><img class="img-responsive" src="https://placehold.co/600x400/png"
+                        alt="OS X Yosemite"></div>
+                <div class="card-footer">
+                    
+                </div>
+            </div>
+        `;
+
+        }
+        if (listType == 'cards') {
+            renderedItem = `
+    <div class="column col-4 col-xs-12 mt-6">
+        <div class="card" id="item${item.socialPostId}">
+            <div class="card-header">
+                <div class="card-title h5">${item.title.substring(0, 20)}</div>
+                <div class="card-subtitle text-gray">${item.sampleProgram.name.substring(0, 20)}</div>
+            </div>
+            <div class="card-body">Info Label</div>
+            <div class="card-image"><img class="img-responsive" src="https://placehold.co/600x400/png" alt="OS X Yosemite"></div>
+            <div class="card-footer">
+                <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button>
+                <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button>
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
+            </div>
+        </div>
+    </div>
+        `;
+        }
+        if (listType == 'tiles') {
+            renderedItem = `
+    <div class="column col-9 col-mx-auto mt-12">
+        <div class="tile" id="item${item.socialPostId}">
+            <div class="tile-icon">
+                <figure class="avatar avatar-lg" data-initial="RB" style="background-color: #5755d9;"></figure>
+            </div>
+            <div class="tile-content">
+                <p class="tile-title">${item.title.substring(0, 20)}</p>
+                <p class="tile-subtitle">${item.sampleProgram.name.substring(0, 20)}</p>
+            </div>
+            <div class="tile-action">
+                <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.socialPostId});" id="editBtn${item.socialPostId}">Edit</button>
+                <button class="btn btn-sm btn-primary" onClick="getById(${item.socialPostId});" id="detailsBtn${item.socialPostId}">Details</button>
+                <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.socialPostId},'${item.title}');" id="delBtn${item.socialPostId}">X</button>
+            </div>
+        </div>
+    </div>
+        `;
+        }
+        return renderedItem;
+    }
+
+    function renderPagingButton(pageNum) {
+        var renderedItem = `<button class="btn btn-sm" onclick="gotoPage(${pageNum});">${pageNum}</button>`;
+        return renderedItem;
+    }
+
+    function renderPagingBar(pagingButtons) {
+        var renderedItem = `<div class="column col-12 text-center">${pagingButtons}</div>`;
+        return renderedItem;
+    }
+
+    function renderToast(messageType, message) {
+        var renderedItem = `<div class="toast toast-${messageType}">
+            <button class="btn btn-clear float-right" onClick="hideToast();"></button>
+            ${message}
+        </div>`;
+        return renderedItem;
+    }
+
+    var currentPage = 1;
+    var pageSize = 7;
+    var totalPageCount = 1;
+    function renderPagingList() {
+        totalPageCount = Math.ceil(listCount / pageSize);
+        var pageLimit = 0;
+        var startPage = 0;
+
+        //Extra Logic
+        if (currentPage >= 2) {
+            startPage = currentPage - 1;
+            if (totalPageCount <= (currentPage + 1)) {
+                pageLimit = totalPageCount;
+            } else {
+                pageLimit = currentPage + 1;
+            }
+        } else {
+            startPage = 1;
+            if (totalPageCount < 3) {
+                pageLimit = totalPageCount;
+            } else {
+                pageLimit = 3;
+            }
+        }
+
+        var pageButtons = '';
+        var activeSwitch = '';
+        for (let i = startPage; i <= pageLimit; i++) {
+            if ((i + 1) == currentPage) {
+                activeSwitch = ' active';
+            } else {
+                activeSwitch = '';
+            }
+            pageButtons += renderPagingButton(i);
+        }
+        var content = renderPagingBar(pageButtons);
+        iget('paginationHolder').innerHTML = content;
+    }
+    // End Templating
+    // Lookups
+    function getPrograms() {
+        makeRequest('GET', '/sample/programs', null, function (response) {
+            var items = JSON.parse(response);
+            var itemList = iget('SampleProgramId');
+            itemList.innerHTML = '';
+            var editItemList = iget('EditSampleProgramId');
+            editItemList.innerHTML = '';
+            items.result.forEach(function (item) {
+                var option = document.createElement('option');
+                option.textContent = item.name;
+                option.value = item.sampleProgramId;
+                itemList.appendChild(option);
+                editItemList.appendChild(option.cloneNode(true));
+            });
+        });
+    }
+
+    // End Lookups
+
+    // Data Calls
+    var listCount = 0;
+
+    function getCount() {
+        makeRequest('GET', '/socialpost/count', null, function (response) {
+            listCount = parseInt(response);
+            renderPagingList();
+        });
+    }
+
+    function getAllItems() {
+        setTimeout(function () {
+            var skip = (currentPage - 1) * pageSize;
+            var getAllUrl = '/socialpost/all?skip=' + skip;
+            
+            makeRequest('GET', getAllUrl, null, function (response) {
+                var items = JSON.parse(response);
+                var itemsList = iget('listItemsHolder');
+                itemsList.innerHTML = '';
+                items.result.forEach(function (item) {
+                    var template = '';
+                    template = renderListItem(item);
+                    itemsList.innerHTML += template;
+                });
+            });
+        }, 1500);
+    }
+
+    function searchItems() {
+        var term = iget('q').value;
+        if (term.length > 2) {
+            hidePagination();
+            makeRequest('GET', '/socialpost/search?term=' + term, null, function (response) {
+                var items = JSON.parse(response);
+                var itemsList = iget('listItemsHolder');
+                itemsList.innerHTML = '';
+                items.result.forEach(function (item) {
+                    //var elem = document.createElement('tr');
+                    //elem.id = 'item' + item.socialPostId;
+                    //var template = renderListItem(item);
+                    //elem.innerHTML = template;
+                    //itemsList.appendChild(elem);
+                    var template = '';
+                    template = renderListItem(item);
+                    //itemsList.appendChild(template);
+                    itemsList.innerHTML += template;
+                });
+            });
+        }
+        if (term.length == 0) {
+            gotoPage(1);
+            showPagination();
+        }
+    }
+
+    function addItem() {
+        var formData = new FormData();
+        var name = iget('Title').value;
+        var sampleProgramId = iget('SampleProgramId').value;
+        var isActive = iget('IsActive').value;
+        formData.append("Name", name);
+        formData.append("SampleProgramId", sampleProgramId);
+        formData.append("IsActive", isActive);
+        makeFormRequest('POST', '/socialpost/create',
+            formData,
+            function (response) {
+                var item = JSON.parse(response);
+                togglePropertiesBar();
+                listCount += 1;
+                showToast('primary', `Added "${item.value.title}".`);
+                renderPagingList();
+                if (currentPage == 1) {
+                    // Lookup ref.
+                    var template = renderListItem(item.value);
+                    var elem = document.createElement('tr');
+                    elem.id = 'item' + item.value.socialPostId;
+                    elem.innerHTML = template;
+                    var itemsList = iget('listItemsHolder');
+
+                    if (listCount - 1 > pageSize) {
+                        itemsList.removeChild(itemsList.lastChild);
+                    }
+                    itemsList.insertBefore(elem, itemsList.firstChild);
+
+                }
+                iget("frmAddData").reset();
+                setTimeout(function () {
+                    hideToast();
+                }, 7000);
+            }, true);
+    }
+
+    function deleteItem(id, name) {
+        makeRequest('POST', '/socialpost/delete/' + id, { "id": id }, function (response) {
+            const element = iget('item' + id);
+            element.className = 'greyed-out';
+            //element.remove();
+            listCount -= 1;
+            totalPageCount = Math.ceil(listCount / pageSize);
+            if (currentPage > totalPageCount) {
+                currentPage = totalPageCount;
+                gotoPage(currentPage);
+            }
+            iget('editBtn' + id).disabled = true;
+            iget('detailsBtn' + id).disabled = true;
+            iget('delBtn' + id).disabled = true;
+            showToast('error', `Removed "${name}".`);
+            renderPagingList();
+            setTimeout(function () {
+                hideToast();
+            }, 7000);
+        }, true);
+    }
+
+
+    function getById(id) {
+        makeRequest('GET', '/socialpost/' + id, { id: id }, function (response) {
+            var item = JSON.parse(response);
+            setActivePropertyTab('detailsTab');
+            if (!showingPropertiesBar) {
+                togglePropertiesBar();
+            }
+            iget('labelTitle').innerText = item.title;
+            iget('labelSampleProgram').innerText = item.sampleProgram.name;
+            iget('labelIsArchived').innerText = item.isActive;
+        }, false);
+    }
+
+    function fillById(id) {
+        selected = id;
+        makeRequest('GET', '/socialpost/' + id, { id: id }, function (response) {
+            var item = JSON.parse(response);
+            iget('EditTitle').value = item.title;
+            iget('EditSampleProgramId').value = item.sampleProgramId;
+            setActivePropertyTab('editItemTab');
+            if (!showingPropertiesBar) {
+                togglePropertiesBar();
+            }
+        }, false);
+    }
+
+    function fillSearchNote(){
+        iget('searchNote').innerText = `
+            Upto ${pageSize} matches returned.
+        `;
+    }
+
+
+    function editItem() {
+        var formData = new FormData();
+        var title = iget('EditTitle').value;
+        var sampleProgramDD = iget('EditSampleProgramId');
+        var sampleProgramId = sampleProgramDD.value;
+        var sampleProgramName = sampleProgramDD.options[sampleProgramDD.selectedIndex].text;
+        var isActive = iget('EditIsActive').value;
+        formData.append("SocialPostId", selected);
+        formData.append("Title", title);
+        formData.append("SampleProgramId", sampleProgramId);
+        formData.append("IsActive", isActive);
+        makeFormRequest('POST', '/socialpost/edit/' + selected,
+            formData,
+            function (response) {
+                togglePropertiesBar();
+                var item = JSON.parse(response);
+                item.result.sampleProgramId = sampleProgramId;
+                item.result.sampleProgram.name = sampleProgramName;
+                var template = renderListItem(item.result);
+                iget('item' + item.result.socialPostId).innerHTML = template;
+                showToast('secondary', `Updated "${iget('EditTitle').value}".`);
+            }, true);
+    }
+    // End Data Calls
+
+    // Event Binding
+    document.addEventListener('DOMContentLoaded', function () {
+        iget('mainListHolder').innerHTML = getContainerPreset();
+        makeListHolderEmpty();
+        iget('btnShowAddDataForm').addEventListener('click', function () {
+            togglePropertiesBar();
+            setActivePropertyTab('newItemTab');
+        });
+        iget('btnAdd').addEventListener('click', function () {
+            addItem();
+        });
+        iget('btnRefresh').addEventListener('click', function () {
+            gotoPage(currentPage);
+        });
+        iget('btnEdit').addEventListener('click', function () {
+            editItem();
+        });
+
+        fillSearchNote();
+        getCount();
+        getPrograms();
+        getAllItems();
+        iget('q').focus();
+    });
+    // End Event Binding
+
+</script>
