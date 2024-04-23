@@ -2,52 +2,200 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SampleWebApp</title>
-    <link rel="stylesheet" href="/css/site.css" />
-    <link rel="stylesheet" href="/css/spectre.css" />
-    <link rel="stylesheet" href="/css/spectre-exp.min.css" />
-    <link rel="stylesheet" href="/css/spectre-icons.min.css" >
+    
+    <link rel="stylesheet" href="~/css/spectre.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/spectre-exp.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/spectre-icons.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+
+
 </head>
 <body>
-    @RenderSection("scripts", required: false)
-    <div class="columns gapless">
+    <header class="navbar custom-nav">
+        <section class="navbar-section">
+            <!-- Dropdown Menu -->
+            <div class="dropdown">
+                <a href="#" class="btn btn-link dropdown-toggle" tabindex="0">
+                    Quick Nav <i class="icon icon-caret"></i>
+                </a>
+                <!-- Dropdown menu links -->
+                <ul class="menu">
+                    <li class="menu-item">
+                        <a href="#">Home</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">About</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">Services</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-        <div class="column col-12 shadow navline">
-            <header class="navbar px-8">
-                <section class="navbar-section">
-                    <a href="..." class="navbar-brand mr-2">SamplerApp</a>
-                    <div class="dropdown">
-                        <div class="btn-group"><a class="btn btn-link">Pages</a><a class="btn btn-link dropdown-toggle" tabindex="0"><i class="icon icon-caret"></i></a>
-                            <ul class="menu">
-                                <li class="menu-item"><a href="/sample">Sample</a></li>
-                                <li class="menu-item"><a href="/sampleprogram">Sample Program</a></li>
-                                <li class="menu-item"><a href="/socialpost">Social Post</a></li>
-                            </ul>
+        <section class="navbar-section">
+            <!-- Wide Search Bar -->
+            <div class="form-group" style="width:100%;">
+                <input type="search" class="form-input" placeholder="Search...">
+            </div>
+        </section>
+
+        <section class="navbar-section">
+            <button class="btn btn-secondary mr-2" id="toggleButton">Add +</button>
+            <!-- Profile Dropdown -->
+            <div class="dropdown dropdown-right">
+                <a href="#" class="dropdown-toggle" tabindex="0">
+                    <figure class="avatar avatar-md" data-initial="RB" style="background-color: #5755d9;"></figure>
+                </a>
+                <!-- Dropdown profile links -->
+                <ul class="menu">
+                    <li class="menu-item">
+                        <a href="#">Profile</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">Settings</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </header>
+    <!-- Side Navigation -->
+    <div class="side-nav">
+
+        <div class="accordion">
+            <input id="accordion-1" type="checkbox" name="accordion-radio" hidden="" checked="">
+            <label class="accordion-header c-hand" for="accordion-1"><i
+                    class="icon icon-arrow-right mr-1"></i>Go To</label>
+            <div class="accordion-body">
+                <ul class="menu menu-nav">
+                    <li class="menu-item">
+                        <a 
+                            href="/sample/index"
+                            class="@(ViewBag.Title == "Sample" ? "active" : "")"
+                        >
+                        Sample
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/sampleprogram/index"
+                            class="@(ViewBag.Title == "SampleProgram" ? "active" : "")"
+                        >
+                        Sample Program
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/Home/Index"
+                            class="@(ViewBag.Title == "Home" ? "active" : "")"
+                        >
+                        Home
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/socialpost/index"
+                            class="@(ViewBag.Title == "SocialPost" ? "active" : "")"
+                        >
+                        Social Post
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/list/index"
+                            class="@(ViewBag.Title == "List" ? "active" : "")"
+                        >
+                        List
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/tilelist/index"
+                            class="@(ViewBag.Title == "TileList" ? "active" : "")"
+                        >
+                        Tile List
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a 
+                            href="/Permissions/Index"
+                            class="@(ViewBag.Title == "Permissions" ? "active" : "")"
+                        >
+                        Permissions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="accordion">
+            <input id="accordion-2" type="checkbox" name="accordion-radio" hidden="">
+            <label class="accordion-header c-hand" for="accordion-2"><i
+                    class="icon icon-arrow-right mr-1"></i>Admin</label>
+            <div class="accordion-body">
+                <ul class="menu menu-nav">
+                    <li class="menu-item"><a href="#accordions">Users</a></li>
+                    <li class="menu-item"><a href="#accordions">User Groups</a></li>
+                    <li class="menu-item"><a href="#accordions">Group Permissions</a></li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="accordion">
+            <input id="accordion-3" type="checkbox" name="accordion-radio" hidden="">
+            <label class="accordion-header c-hand" for="accordion-3">
+                <i class="icon icon-arrow-right mr-1"></i>Connections
+            </label>
+            <div class="accordion-body">
+                <ul class="menu menu-nav">
+                    <li class="menu-item"><a href="#accordions">Facebook</a></li>
+                    <li class="menu-item"><a href="#accordions">Snap</a></li>
+                    <li class="menu-item"><a href="#accordions">S3</a></li>
+                    <li class="menu-item"><a href="#accordions">Azure Data Lake</a></li>
+                    <li class="menu-item"><a href="#accordions">Snap</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- Main Content with adjusted layout -->
+    <div class="content mt-10">
+
+        <!-- Adjusted Main Content -->
+        <div class="container">
+            @RenderBody()
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="columns">
+                    <div class="column col-12">
+                        <div class="text-center">
+                            <p>© 2024 Simple Spectre.css Page with Side Navigation</p>
                         </div>
                     </div>
-
-                </section>
-                <section class="navbar-section">
-                    <partial name="_LoginPartial" />
-                </section>
-            </header>
-        </div>
-
-
-        <div class="container">
-            <div class="columns col-12 px-8" >
-                <div class="column col-12 mt-8">
-                    @RenderBody()
                 </div>
             </div>
-        </div>
-
-        <div class="column">
-            <div class="column col-6 col-mx-auto text-center mt-8">
-                &copy; 2024 - SampleWebApp
-            </div>
-        </div>
+        </footer>
     </div>
+
+<!--
+    <script type="text/javascript">
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            var offscreenBar = document.getElementById('offscreenBar');
+            offscreenBar.classList.toggle('offscreen-bar-sm-show');
+        });
+        
+    </script>
+-->
+    
 </body>
 </html>

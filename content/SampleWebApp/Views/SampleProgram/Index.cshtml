@@ -5,7 +5,7 @@
 <div class="columns col-oneline">
         <div class="column col-6">
             <div class="card-header">
-                <div class="card-title h5 text-primary">SamplePrograms</div>
+                <div class="card-title h3 text-primary">Sample Programs</div>
                 <div class="card-subtitle text-gray">Manage</div>
             </div>
         </div>
@@ -13,7 +13,7 @@
             <a id="btnRefresh" class="btn float-right">
                 <i class="icon icon-refresh"></i>
             </a>
-            <a id="btnAddData" class="btn float-right">
+            <a id="btnShowAddDataForm" class="btn float-right">
                 <i class="icon icon-plus"></i>
             </a>
         </div>
@@ -52,53 +52,147 @@
 </table>
 
 <div class="container">
-    <div class="columns text-center col-gapless mt-8" id="paginationHolder">
+    <div class="columns text-center col-gapless mt-6" id="paginationHolder">
     
     
     </div>
 
 </div>
-
-<div class="modal" id="modalForm" data-form-mode="create">
-    <a onclick="toggleDataForm();" class="modal-overlay" aria-label="Close"></a>
-    <div class="modal-container">
-        <div class="modal-header">
-            <a onclick="toggleDataForm();" class="btn btn-clear float-right" aria-label="Close"></a>
-            <div class="modal-title h5">Add Program</div>
-        </div>
-        <div class="modal-body">
-            <div class="content">
-                <form method="post" name="frmData" id="frmData" onsubmit="return false;">
-                            @Html.AntiForgeryToken()
-                            <div class="form-group">
-                                <label for="Name" class="form-label">Name</label>
-                                    
-                                <input type="text" class="form-input" minlength="2" maxlength="60" id="Name" name="Name" />
-                                <span id="Name" class="text-danger"></span>
-                            </div>
-                    
-                    <div class="form-group form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" checked /> Is Active
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary" id="btnAdd" name="btnAdd">Submit</button>
-                    </div>
-                </form>
+<!--offscreenForm = modalForm-->
+<div id="propertiesBar" class="offscreen-bar-sm">
+    <div class="columns">
+        <div class="column col-12">
+            <div class="bg-gray docs-block">
+                <button onclick="togglePropertiesBar();" aria-label="Close" class="btn btn-action btn-sm s-circle float-right">X</button>
             </div>
         </div>
-        <div class="modal-footer">
+    </div>
+
+    <ul class="tab tab-block">
+        <li class="tab-item active" id="newItemTabHeader" onclick="setActivePropertyTab('newItemTab');">
+            <a class="badge" data-badge="*">
+            New
+            </a>
+        </li>
+        <li class="tab-item c-hand" id="detailsTabHeader">
+            <a>
+            Details
+            </a>
+        </li>
+        <li class="tab-item" id="editItemTabHeader">
+            <a>
+            Edit
+            </a>
+        </li>
+    </ul>
+    <div class="container mt-6 px-2">
+        <div class="columns" id="newItemTabContent">
+            <div class="column col-12">
+                <div class="h5 text-primary">Add Program</div>
+                    <form method="post" name="frmAddData" id="frmAddData" onsubmit="return false;">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label for="Name" class="form-label">Name</label>
+                                
+                            <input type="text" class="form-input" minlength="2" maxlength="60" id="Name" name="Name" />
+                            <span id="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="SampleProgramId" class="form-label">Program</label>
+                            <select for="SampleProgramId" class="form-select" id="SampleProgramId" name="SampleProgramId">
+                            </select>
+                        </div>
+                        
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" checked /> Is Active
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" id="btnAdd" name="btnAdd">Submit</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+        <div class="columns d-none" id="detailsTabContent">
+            <div class="container">
+                <div class="columns">
+                    <div class="column col-12">
+                        <p>
+                            <label for="labelName" class="label">Name</label>   
+                            <label id="labelName" class="form-label"></label>  
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="columns">
+                    <div class="column col-12">
+                    <p>
+                        <label for="labelIsArchived" class="label">Is Archived</label>   
+                        <label id="labelIsArchived" class="form-label"></label>  
+                    </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns d-none" id="editItemTabContent">
+            <div class="column col-12">
+                <div class="h5 text-primary">Edit Program</div>
+                    <form method="post" name="frmEditData" id="frmEditData" onsubmit="return false;">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label for="Name" class="form-label">Name</label>   
+                            <input type="text" class="form-input" minlength="2" maxlength="60" id="EditName" name="EditName" />
+                            <span class="text-danger"></span>
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="EditSampleProgramId" class="form-label">Program</label>
+                            <select for="EditSampleProgramId" class="form-select" id="EditSampleProgramId" name="EditSampleProgramId">
+                            </select>
+                        </div>
+                        
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="EditIsActive" name="EditIsActive" value="true" checked /> Is Active
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" id="btnEdit" name="btnEdit">Edit</button>
+                        </div>
+                    </form>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="modal" id="detailsModal">
-    <a onclick="toggleDetailsModal();" class="modal-overlay" aria-label="Close"></a>
-    <div class="modal-container p-0" id="detailsContent">
-    </div>
+<div id="offscreenForm" data-form-mode="create" class="offscreen-bar-sm">
+        <button onclick="togglePropertiesBar();" aria-label=">" class="btn btn-action btn-sm s-circle float-right">X</button>
+        <div class="container">
+            <div class="h5">Add Program</div>
+            <form method="post" name="frmAddData" id="frmAddData" onsubmit="return false;">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="Name" class="form-label">Name</label>
+                        
+                    <input type="text" class="form-input" minlength="2" maxlength="60" id="Name" name="Name" />
+                    <span id="Name" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" checked /> Is Active
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" id="btnAdd" name="btnAdd">Submit</button>
+                </div>
+            </form>
+        </div>
 </div>
-
 
 <div class="toastr hide" id="toastHolder">
 
@@ -111,45 +205,52 @@ function iget(id){
 }
 // End Helpers
 
-
 // UI Tracking
-var listMode = 'list';
-var showingForm = false;
+var activePropertyTab = 'detailsTabHeader';
 var showingToast = false;
-var showingDetails = false;
+var showingPropertiesBar = false;
 var selected = 0;
-function toggleDataForm(){
-    var elem = iget('modalForm');
-    if (showingForm){
-        elem.className = 'modal';
-        showingForm = false;
 
-    }else{
-        elem.className = 'modal active';
-        showingForm = true;
+function setActivePropertyTab(tabName){
+    setTabHeadersInactive();
+    setTabContentsInactive();
+    activePropertyTabHeader = tabName + 'Header';
+    activePropertyTabContent = tabName + 'Content';
+    var activeTabHeader = iget(activePropertyTabHeader);
+    activeTabHeader.className = 'tab-item active';
+    var activeTabContent = iget(activePropertyTabContent);
+    activeTabContent.className = 'columns';
+    //Special flow
+    if (tabName == 'editItemTab'){
+        iget('detailsTabHeader').className = 'tab-item d-hide';
     }
-    console.log(elem.getAttribute('data-form-mode'));
 }
 
-function toggleDetailsModal(item){
-    var detailsTemplate = '';
-    var elem = iget('detailsModal');
-    if (showingDetails){
-        elem.className = 'modal';
-        showingDetails = false;
+function setTabHeadersInactive(){
+    var detailsTabHeader = iget('detailsTabHeader');
+    var newItemTabHeader = iget('newItemTabHeader');
+    var editTabHeader = iget('editItemTabHeader');
+    detailsTabHeader.className = 'tab-item';
+    newItemTabHeader.className = 'tab-item c-hand';
+    editTabHeader.className = 'tab-item d-hide';
+}
+
+function setTabContentsInactive(){
+    var detailsTabContent = iget('detailsTabContent');
+    var newItemTabContent = iget('newItemTabContent');
+    var editItemTabContent = iget('editItemTabContent');
+    detailsTabContent.className = 'columns d-none';
+    newItemTabContent.className = 'columns d-none';
+    editItemTabContent.className = 'columns d-none';
+}
+
+function togglePropertiesBar(){
+    var propertiesBar = iget('propertiesBar');
+    propertiesBar.classList.toggle('offscreen-bar-sm-show');
+    if (showingPropertiesBar){
+        showingPropertiesBar = false;
     }else{
-        if(item){
-            detailsTemplate = `<div class="card">
-                <div class="card-header">
-                <div class="card-title modal-title h5">Details</div>
-                <div class="card-body">Name : ${item.name}</div>
-                <div class="mt-8"><button class="btn btn-primary" onclick="toggleDetailsModal();">OK</button></div>
-            </div>`;
-                var holder = iget('detailsContent');
-                holder.innerHTML = detailsTemplate;
-            }
-            elem.className = 'modal active';
-            showingDetails = true;
+        showingPropertiesBar = true;
     }
 }
 
@@ -173,7 +274,7 @@ function showToast(msgType, msg){
     var elem = iget('toastHolder');
     var toastTemplate = '';
     if (msgType){
-        toastTemplate = `<div class="toastr toast-${msgType}">
+        toastTemplate = `<div class="toast toast-${msgType}">
             <button class="btn btn-clear float-right" onClick="hideToast();"></button>
             ${msg}
         </div>`;
@@ -207,7 +308,6 @@ function gotoPage(pageNumber){
     makeListHolderEmpty();
     getAllItems();
 }
-
 // End UI Tracking
 
 // Request Core
@@ -260,13 +360,30 @@ function makeFormRequest(method, url, data, callback, useToken){
 function renderListItem(item){
     var renderedItem = `
         <td>${item.name.substring(0,20)}</td>
-            
         <td>
             <button class="btn btn-sm text-light bg-dark" onClick="fillById(${item.sampleProgramId});" id="editBtn${item.sampleProgramId}">Edit</button> |
             <button class="btn btn-sm btn-primary" onClick="getById(${item.sampleProgramId});" id="detailsBtn${item.sampleProgramId}">Details</button> |
             <button class="btn btn-sm text-dark bg-light" onClick="deleteItem(${item.sampleProgramId},'${item.name}');" id="delBtn${item.sampleProgramId}">X</button>
         </td>
     `;
+    return renderedItem;
+}
+
+function renderPagingButton(pageNum){
+    var renderedItem = `<button class="btn btn-sm" onclick="gotoPage(${pageNum});">${pageNum}</button>`;
+    return renderedItem;
+}
+
+function renderPagingBar(pagingButtons){
+    var renderedItem = `<div class="column col-12 text-center">${pagingButtons}</div>`;
+    return renderedItem;
+}
+
+function renderToast(messageType, message){
+    var renderedItem = `<div class="toast toast-${messageType}">
+            <button class="btn btn-clear float-right" onClick="hideToast();"></button>
+            ${message}
+        </div>`;
     return renderedItem;
 }
 
@@ -303,14 +420,29 @@ function renderPagingList(){
         }else{
             activeSwitch = '';
         }
-        pageButtons += ` <button class="btn btn-sm" onclick="gotoPage(${i});">${i}</button>`;
+        pageButtons += renderPagingButton(i);
     }
-    var content = `<div class="column col-12 text-center">${pageButtons}</div>`;
+    var content = renderPagingBar(pageButtons);
     iget('paginationHolder').innerHTML = content;
 }
 // End Templating
-
 // Lookups
+function getPrograms(){
+    makeRequest('GET', '/sample/programs', null, function(response){
+        var items = JSON.parse(response);
+        var itemList = iget('SampleProgramId');
+        itemList.innerHTML = '';
+        items.result.forEach(function(item) {
+            var elem = document.createElement('option');
+            var template = `${item.name}`;
+            elem.innerHTML = template;
+            elem.value = item.sampleProgramId;
+            itemList.appendChild(elem);
+            itemList.appendChild(elem);
+        });
+    });
+}
+
 // End Lookups
 
 // Data Calls
@@ -375,7 +507,7 @@ function addItem(){
         formData,
         function(response){
             var item = JSON.parse(response);
-            toggleDataForm();
+            togglePropertiesBar();
             listCount += 1;
             showToast('primary', `Added "${item.value.name}".`);
             renderPagingList();
@@ -394,7 +526,7 @@ function addItem(){
         itemsList.insertBefore(elem, itemsList.firstChild);
 
         }
-        iget("frmData").reset();
+        iget("frmAddData").reset();
         setTimeout(function() {
             hideToast();
         }, 7000);
@@ -402,7 +534,7 @@ function addItem(){
 }
 
 function deleteItem(id, name) {
-    makeRequest('POST', '/sampleprogram/delete/' + id, {id:id}, function(response){
+    makeRequest('POST', '/sampleprogram/delete/' + id, {"id":id}, function(response){
         const element = iget('item' + id);
         element.className = 'greyed-out';
         //element.remove();
@@ -427,65 +559,69 @@ function deleteItem(id, name) {
 function getById(id){
     makeRequest('GET','/sampleprogram/'+id, {id : id}, function(response){
         var item = JSON.parse(response);
-        toggleDetailsModal(item);
+        setActivePropertyTab('detailsTab');
+        if(!showingPropertiesBar){
+            togglePropertiesBar();
+        }
+        iget('labelName').innerText = item.name;
+        iget('labelIsArchived').innerText = item.isActive;
     }, false);
 }
 
 function fillById(id){
     selected = id;
     makeRequest('GET', '/sampleprogram/' + id, {id : id}, function(response){
-        toggleDataForm();
         var item = JSON.parse(response);
-    iget('Name').value = item.name;
-    iget('frmData').setAttribute('action', 'sampleprogram/edit/' + item.sampleProgramId);
-    iget('modalForm').setAttribute('data-form-mode', 'edit');    
+        iget('EditName').value = item.name;
+        setActivePropertyTab('editItemTab');
+        if(!showingPropertiesBar){
+            togglePropertiesBar();
+        }
     }, false);
 }
 
 
 function editItem(){
     var formData = new FormData();
-        var name = iget('Name').value;
-    var isActive = iget('IsActive').value;
+    var name = iget('EditName').value;
+    var isActive = iget('EditIsActive').value;
     formData.append("SampleProgramId", selected);
     formData.append("Name", name);
     formData.append("IsActive", isActive);
-    makeFormRequest('POST', iget('frmData').getAttribute('action'),
+    makeFormRequest('POST', '/sampleprogram/edit/' + selected,
         formData,
         function(response) {
-            toggleDataForm();
+            togglePropertiesBar();
             var item = JSON.parse(response);
             var template = renderListItem(item.result);
             iget('item' + item.result.sampleProgramId).innerHTML = template;
-            showToast('primary', `Updated "${iget('Name').value}".`);
+            showToast('secondary', `Updated "${iget('EditName').value}".`);
         }, true);
 }
-
 // End Data Calls
 
 // Event Binding
 window.onload = function init(){
-    iget('btnAddData').addEventListener('click', function(){
-        iget('frmData').setAttribute('action', 'sampleprogram/create');
-        iget('modalForm').setAttribute('data-form-mode','create');
-        iget("frmData").reset();
-        toggleDataForm();
-    });
-    iget('btnRefresh').addEventListener('click', function(){
-        gotoPage(1);
+    iget('btnShowAddDataForm').addEventListener('click', function(){
+        togglePropertiesBar();
+        setActivePropertyTab('newItemTab');
     });
     iget('btnAdd').addEventListener('click', function(){
-        var elem = iget('modalForm');
-        var mode = elem.getAttribute('data-form-mode');
-        if (mode=='create'){
-            addItem();
-        }else{
-            editItem();
-        }
+        addItem();
     });
+    iget('btnRefresh').addEventListener('click', function(){
+        gotoPage(currentPage);
+    });
+    iget('btnEdit').addEventListener('click', function(){
+        editItem();
+    });
+
     getCount();
+    getPrograms();
     getAllItems();
     iget('q').focus();
+
 }
 // End Event Binding
+
 </script>

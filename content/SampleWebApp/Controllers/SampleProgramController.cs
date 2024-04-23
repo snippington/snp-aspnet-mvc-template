@@ -60,7 +60,7 @@ namespace SampleWebApp.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("/sampleprogram/edit/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SampleProgramId, Name, IsActive")] SampleProgram sampleProgram)
         {
@@ -97,9 +97,7 @@ namespace SampleWebApp.Controllers
             }
         }
 
-
-
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("/sampleprogram/delete/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
