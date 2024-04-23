@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SampleWebApp.Data;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
