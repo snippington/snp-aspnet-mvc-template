@@ -534,10 +534,12 @@
 
     function addItem() {
         var formData = new FormData();
-        var name = iget('Title').value;
-        var sampleProgramId = iget('SampleProgramId').value;
+        var title = iget('Title').value;
+        var sampleProgramDD = iget('SampleProgramId');
+        var sampleProgramId = sampleProgramDD.value;
+        var sampleProgramName = sampleProgramDD.options[sampleProgramDD.selectedIndex].text;
         var isActive = iget('IsActive').value;
-        formData.append("Name", name);
+        formData.append("Title", title);
         formData.append("SampleProgramId", sampleProgramId);
         formData.append("IsActive", isActive);
         makeFormRequest('POST', '/socialpost/create',
@@ -546,10 +548,14 @@
                 var item = JSON.parse(response);
                 togglePropertiesBar();
                 listCount += 1;
-                showToast('primary', `Added "${item.value.name}".`);
+                
+                showToast('primary', `Added "${item.value.title}".`);
                 renderPagingList();
                 if (currentPage == 1) {
                     // Lookup ref.
+                    item.value.sampleProgramId = sampleProgramId;
+                    item.value.sampleProgram = {};
+                    item.value.sampleProgram.name = sampleProgramName;
                     var template = renderListItem(item.value);
                     var elem = document.createElement('tr');
                     elem.id = 'item' + item.value.socialPostId;
