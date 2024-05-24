@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Sample Programs";
 }
 
 <div class="columns col-oneline">
@@ -88,7 +88,7 @@
     <div class="container mt-6 px-2">
         <div class="columns" id="newItemTabContent">
             <div class="column col-12">
-                <div class="h5 text-primary">Add Program</div>
+                <div class="h5 text-primary">Add Programe</div>
                     <form method="post" name="frmAddData" id="frmAddData" onsubmit="return false;">
                         @Html.AntiForgeryToken()
                         <div class="form-group">
@@ -96,11 +96,6 @@
                                 
                             <input type="text" class="form-input" minlength="2" maxlength="60" id="Name" name="Name" />
                             <span id="Name" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="SampleProgramId" class="form-label">Program</label>
-                            <select for="SampleProgramId" class="form-select" id="SampleProgramId" name="SampleProgramId">
-                            </select>
                         </div>
                         
                         <div class="form-group form-check">
@@ -147,12 +142,6 @@
                             <label for="Name" class="form-label">Name</label>   
                             <input type="text" class="form-input" minlength="2" maxlength="60" id="EditName" name="EditName" />
                             <span class="text-danger"></span>
-                        </div>
-            
-                        <div class="form-group">
-                            <label for="EditSampleProgramId" class="form-label">Program</label>
-                            <select for="EditSampleProgramId" class="form-select" id="EditSampleProgramId" name="EditSampleProgramId">
-                            </select>
                         </div>
                         
                         <div class="form-group form-check">
@@ -426,24 +415,7 @@ function renderPagingList(){
     iget('paginationHolder').innerHTML = content;
 }
 // End Templating
-// Lookups
-function getPrograms(){
-    makeRequest('GET', '/sample/programs', null, function(response){
-        var items = JSON.parse(response);
-        var itemList = iget('SampleProgramId');
-        itemList.innerHTML = '';
-        items.result.forEach(function(item) {
-            var elem = document.createElement('option');
-            var template = `${item.name}`;
-            elem.innerHTML = template;
-            elem.value = item.sampleProgramId;
-            itemList.appendChild(elem);
-            itemList.appendChild(elem);
-        });
-    });
-}
 
-// End Lookups
 
 // Data Calls
 var listCount = 0;
@@ -617,7 +589,6 @@ window.onload = function init(){
     });
 
     getCount();
-    getPrograms();
     getAllItems();
     iget('q').focus();
 

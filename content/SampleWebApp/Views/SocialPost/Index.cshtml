@@ -546,7 +546,7 @@
                 var item = JSON.parse(response);
                 togglePropertiesBar();
                 listCount += 1;
-                showToast('primary', `Added "${item.value.title}".`);
+                showToast('primary', `Added "${item.value.name}".`);
                 renderPagingList();
                 if (currentPage == 1) {
                     // Lookup ref.
